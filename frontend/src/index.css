@@ -8,6 +8,33 @@
   }
 }
 
+@layer utilities {
+  .animate-wave {
+    animation: wave-avatar 2s infinite ease-in-out;
+    transform-origin: bottom center;
+  }
+}
+
+@keyframes wave-avatar {
+
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1.0);
+  }
+
+  25% {
+    transform: rotate(-3deg) scale(1.02);
+  }
+
+  50% {
+    transform: rotate(3deg) scale(1.02);
+  }
+
+  75% {
+    transform: rotate(-2deg) scale(1.0);
+  }
+}
+
 @media print {
   @page {
     margin: 10mm;
