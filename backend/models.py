@@ -9,7 +9,9 @@ class Patient(Base):
     name = Column(String(255), index=True)
     birth_date = Column(Date)
     age = Column(Integer)
-    sex = Column(String(50))
+    sex = Column(String(50), default="Femenino")
+    phone = Column(String(20), nullable=True)
+    email = Column(String(255), nullable=True)
     referrer = Column(String(255), nullable=True)
     additional_data = Column(Text, nullable=True)
 
@@ -26,6 +28,8 @@ class ColposcopyExam(Base):
     vulva_vagina_desc = Column(Text, nullable=True)
     observations = Column(Text, nullable=True)
     diagnosis = Column(Text, nullable=True)
+    others = Column(Text, nullable=True)
+    referred_by = Column(String(255), nullable=True, default='GENERICO')
     plan = Column(Text, nullable=True)
 
     # Dropdown/Selection fields

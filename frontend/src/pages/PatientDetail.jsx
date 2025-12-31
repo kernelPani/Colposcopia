@@ -69,7 +69,7 @@ export default function PatientDetail() {
             </div>
 
             <div className="bg-white rounded-xl shadow-sm p-6 mb-8 border-l-4 border-indigo-500">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
                     <div>
                         <label className="text-xs text-slate-400 uppercase font-bold">Paciente</label>
                         <p className="text-lg font-medium text-slate-900">{patient.name}</p>
@@ -79,8 +79,12 @@ export default function PatientDetail() {
                         <p className="text-lg text-slate-700">{patient.age} años / {patient.sex}</p>
                     </div>
                     <div>
-                        <label className="text-xs text-slate-400 uppercase font-bold">Fecha Nacimiento</label>
-                        <p className="text-lg text-slate-700">{patient.birth_date}</p>
+                        <label className="text-xs text-slate-400 uppercase font-bold">Teléfono</label>
+                        <p className="text-lg text-slate-700">{patient.phone || '-'}</p>
+                    </div>
+                    <div>
+                        <label className="text-xs text-slate-400 uppercase font-bold">Correo</label>
+                        <p className="text-lg text-slate-700 truncate">{patient.email || '-'}</p>
                     </div>
                     <div className="flex justify-end items-center">
                         <Link

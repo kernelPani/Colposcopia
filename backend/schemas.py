@@ -8,6 +8,8 @@ class ColposcopyExamBase(BaseModel):
     vulva_vagina_desc: Optional[str] = None
     observations: Optional[str] = None
     diagnosis: Optional[str] = None
+    others: Optional[str] = None
+    referred_by: Optional[str] = 'GENERICO'
     plan: Optional[str] = None
     colposcopy_quality: Optional[str] = None
     cervix_status: Optional[str] = None
@@ -35,7 +37,9 @@ class PatientBase(BaseModel):
     name: str
     birth_date: date
     age: int
-    sex: str
+    sex: str = "Femenino"
+    phone: Optional[str] = None
+    email: Optional[str] = None
     referrer: Optional[str] = None
     additional_data: Optional[str] = None
 

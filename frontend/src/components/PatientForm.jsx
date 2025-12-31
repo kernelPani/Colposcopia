@@ -8,6 +8,8 @@ export default function PatientForm({ onClose, onSuccess, patient = null }) {
         birth_date: patient?.birth_date || '',
         age: patient?.age || '',
         sex: patient?.sex || 'Femenino',
+        phone: patient?.phone || '',
+        email: patient?.email || '',
         referrer: patient?.referrer || ''
     });
     const [loading, setLoading] = useState(false);
@@ -105,19 +107,42 @@ export default function PatientForm({ onClose, onSuccess, patient = null }) {
                                 className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
                             >
                                 <option>Femenino</option>
-                                <option>Masculino</option>
                             </select>
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Referido Por</label>
-                            <input
-                                name="referrer"
-                                value={formData.referrer}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-                                placeholder="Opcional"
-                            />
+                        <div className="flex gap-2">
+                            <div className="flex-1">
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Teléfono</label>
+                                <input
+                                    name="phone"
+                                    value={formData.phone}
+                                    onChange={handleChange}
+                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                                    placeholder="Ej. 4611234567"
+                                />
+                            </div>
+                            <div className="flex-1">
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Correo</label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                                    placeholder="Ej. maria@mail.com"
+                                />
+                            </div>
                         </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Envío / Referido Por</label>
+                        <input
+                            name="referrer"
+                            value={formData.referrer}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                            placeholder="Ej. Dr. García / Clínica San José"
+                        />
                     </div>
 
                     <div className="pt-4 flex justify-end gap-3">

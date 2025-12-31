@@ -19,6 +19,7 @@ export default function NewExam() {
         schiller_test: 'Negativo',
         acetowhite_epithelium: 'Ausente',
         observations: '',
+        others: '',
         diagnosis: '',
         plan: '',
 
@@ -33,9 +34,24 @@ export default function NewExam() {
         cesareas: '',
         fum: '',
         last_pap_smear: '',
+        referred_by: 'GENERICO',
 
         image_paths: ['', '', '', ''] // 4 slots
     });
+
+    React.useEffect(() => {
+        const fetchPatient = async () => {
+            try {
+                const response = await api.get(`/patients/${id}`);
+                if (response.data.referrer) {
+                    setFormData(prev => ({ ...prev, referred_by: response.data.referrer }));
+                }
+            } catch (error) {
+                console.error("Error fetching patient for default referrer", error);
+            }
+        };
+        fetchPatient();
+    }, [id]);
 
     const handleImageUpload = async (index, e) => {
         const file = e.target.files[0];
@@ -69,8 +85,19 @@ export default function NewExam() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSaving(true);
+
+        // Sanitize data: convert empty strings to null for numeric/date fields
+        const cleanedData = { ...formData, patient_id: parseInt(id) };
+        const numericFields = ['menarche_age', 'ivsa_age', 'gestas', 'partos', 'abortos', 'cesareas'];
+        numericFields.forEach(field => {
+            if (cleanedData[field] === '') cleanedData[field] = null;
+            else cleanedData[field] = parseInt(cleanedData[field]);
+        });
+
+        if (cleanedData.fum === '') cleanedData.fum = null;
+
         try {
-            await api.post('/exams/', { ...formData, patient_id: parseInt(id) });
+            await api.post('/exams/', cleanedData);
             navigate(`/patients/${id}`);
         } catch (error) {
             console.error("Error saving exam", error);
@@ -104,6 +131,21 @@ export default function NewExam() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Left Column: Form Fields */}
                 <div className="lg:col-span-1 space-y-4">
+                    {/* General Study Info */}
+                    <div className="bg-white p-4 rounded-xl shadow-sm">
+                        <label className="block text-xs font-bold text-indigo-600 uppercase mb-3">Información del Estudio</label>
+                        <div>
+                            <label className="block text-xs font-medium text-slate-500">Envío (Referido por)</label>
+                            <input
+                                type="text"
+                                name="referred_by"
+                                value={formData.referred_by}
+                                onChange={handleChange}
+                                className="w-full border rounded p-1.5 text-sm"
+                                placeholder="Ej. Dr. García / GENERICO"
+                            />
+                        </div>
+                    </div>
 
                     {/* Gyneco-Obstetric Data */}
                     <div className="bg-white p-4 rounded-xl shadow-sm">
@@ -225,16 +267,38 @@ export default function NewExam() {
                         </div>
                     </div>
 
-                    {/* Diagnosis & Plan */}
-                    <div className="bg-white p-4 rounded-xl shadow-sm space-y-3">
+                    {/* Observations, Others, Diagnosis & Plan */}
+                    <div className="bg-white p-4 rounded-xl shadow-sm space-y-4">
                         <div>
-                            <label className="block text-xs font-bold text-indigo-600 uppercase mb-1">Diagnóstico Colposcópico</label>
+                            <label className="block text-xs font-bold text-indigo-600 uppercase mb-1">Observaciones</label>
                             <textarea
-                                name="diagnosis"
-                                value={formData.diagnosis}
+                                name="observations"
+                                value={formData.observations}
                                 onChange={handleChange}
-                                className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none h-16"
+                                className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none h-20"
+                                placeholder="Notas adicionales del estudio..."
                             />
+                        </div>
+                        <div className="grid grid-cols-1 gap-4">
+                            <div>
+                                <label className="block text-xs font-bold text-indigo-600 uppercase mb-1">Diagnóstico Colposcópico</label>
+                                <textarea
+                                    name="diagnosis"
+                                    value={formData.diagnosis}
+                                    onChange={handleChange}
+                                    className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none h-20"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-indigo-600 uppercase mb-1">Otras</label>
+                                <textarea
+                                    name="others"
+                                    value={formData.others}
+                                    onChange={handleChange}
+                                    className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none h-20"
+                                    placeholder="Otros hallazgos o datos..."
+                                />
+                            </div>
                         </div>
                         <div>
                             <label className="block text-xs font-bold text-indigo-600 uppercase mb-1">Plan / Tratamiento</label>
@@ -242,7 +306,7 @@ export default function NewExam() {
                                 name="plan"
                                 value={formData.plan}
                                 onChange={handleChange}
-                                className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none h-16"
+                                className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none h-20"
                             />
                         </div>
                     </div>

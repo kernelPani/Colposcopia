@@ -61,15 +61,33 @@ export default function ExamDetail() {
             </div>
 
             {/* REPORT CONTAINER (Simulates A4) */}
-            <div className="bg-white shadow-lg p-8 min-h-[1120px] border border-slate-200 print:shadow-none print:border-0 print:p-0 flex flex-col">
+            <div className="bg-white shadow-lg p-8 min-h-[1120px] border border-slate-200 print:shadow-none print:border-0 print:p-4 flex flex-col">
 
                 {/* HEADER */}
-                <div className="text-center mb-4 text-blue-900">
-                    <h1 className="text-xl font-bold uppercase tracking-wide">Hospital San Jose de Celaya</h1>
-                    <h2 className="text-lg font-serif italic font-bold mt-1">Dr. Jose Luis Arteaga Dominguez</h2>
-                    <p className="text-xs uppercase font-medium text-slate-600">Ginecoobstetra Colposcopista</p>
-                    <p className="text-[10px] text-slate-500">HISTEROSCOPIA DX. Y QX.</p>
-                    <p className="text-[10px] text-slate-500">CERTIFICADO POR EL CONSEJO DE G/O No. 5695</p>
+                <div className="flex items-start justify-between mb-6 border-b-2 border-blue-900 pb-4">
+                    <div className="w-24 shrink-0">
+                        <img src="/images/logo_caduceus.png" alt="Logo" className="w-full opacity-90" />
+                    </div>
+                    <div className="text-center flex-1 text-blue-900 px-2">
+                        <h1 className="text-2xl font-bold uppercase tracking-tighter">Hospital San Jose de Celaya</h1>
+                        <h2 className="text-2xl font-serif italic font-bold mt-1 text-blue-800">Dr. Jose Luis Arteaga Dominguez</h2>
+                        <p className="text-sm font-bold uppercase mt-1">Especialista Certificado en Ginecología y Obstetricia</p>
+                        <p className="text-xs uppercase font-medium text-slate-600 mt-1">Ginecoobstetra Colposcopista | Histeroscopia DX. Y QX.</p>
+
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-4 max-w-2xl mx-auto text-[9px] text-slate-600 font-bold uppercase">
+                            <div className="text-left">R.F.C. AEDL590829KG3</div>
+                            <div className="text-left">C.U.R.P. AEDL590829HDFRMS01</div>
+                            <div className="text-left">CED. PROF. 974987</div>
+                            <div className="text-left">CED. ESPEC. 3225937</div>
+                            <div className="text-left">REG. S.S.A. GTO. 2561 Y 635</div>
+                            <div className="text-left">CERTIFICACION DEL CONSEJO DE G/O No. 5695</div>
+                            <div className="text-left">CONSULTORIO: 461-61-49-393</div>
+                            <div className="text-left">CELULAR: 461-61-927-54</div>
+                            <div className="text-left col-span-2 mt-1 border-t border-slate-200 pt-1 text-[10px]">
+                                EJE. NOR-PONIENTE No. 200 PRIMER PISO CONSULTORIO 111
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="border border-blue-800 mb-6">
@@ -93,7 +111,7 @@ export default function ExamDetail() {
                             </div>
                             <div className="flex justify-between">
                                 <span className="font-bold">ENVIO:</span>
-                                <span>{exam.patient?.referrer || 'GENERICO'}</span>
+                                <span>{exam.referred_by || 'GENERICO'}</span>
                             </div>
                         </div>
                     </div>
@@ -186,7 +204,7 @@ export default function ExamDetail() {
                     {/* Others */}
                     <div className="border-b border-blue-800 p-2">
                         <div className="text-xs font-bold uppercase mb-1 text-blue-900">Otras</div>
-                        <p className="text-sm uppercase text-slate-700">Ninguna</p>
+                        <p className="text-sm uppercase text-slate-700">{exam.others || 'Ninguna'}</p>
                     </div>
 
                     {/* Plan */}
@@ -197,46 +215,50 @@ export default function ExamDetail() {
                 </div>
 
                 {/* Images Section */}
-                <div className="grid grid-cols-2 gap-4 mt-4 h-80">
-                    {/* Diagram Box with Signature Integrated */}
-                    <div className="border border-slate-200 p-2 flex flex-col bg-white relative">
-                        <span className="absolute top-2 left-1 text-[9px] bg-white/90 px-1 rounded z-10 border border-slate-100 text-slate-500">Colposcopio - Esquema</span>
+                <div className="flex gap-4 mt-6 w-full">
+                    {/* Left Side: Diagram Box with Signature Integrated */}
+                    <div className="w-1/2 border border-slate-300 p-2 flex flex-col bg-white">
+                        <div className="text-[10px] font-bold text-slate-500 uppercase border-b border-slate-100 pb-1 mb-2 px-1">
+                            Colposcopio - Esquema
+                        </div>
 
                         {/* Image Section */}
-                        <div className="flex-1 flex items-center justify-center overflow-hidden p-2">
+                        <div className="flex-1 flex items-center justify-center min-h-[180px] p-2">
                             <img
                                 src="/images/image1.jpg"
                                 alt="Esquema Cervix"
-                                className="max-h-full max-w-full object-contain"
+                                className="max-h-[200px] w-auto object-contain"
                             />
                         </div>
 
                         {/* Signature Integrated here */}
-                        <div className="mt-2 pt-2 border-t border-slate-100 text-center">
-                            <div className="text-[9px] font-bold uppercase mb-4 text-slate-400">Atentamente:</div>
-                            <div className="border-t border-black mx-auto pt-1 inline-block px-2">
-                                <div className="font-bold text-[10px] text-slate-800">DR. JOSE LUIS ARTEAGA DOMINGUEZ</div>
-                                <div className="text-[9px] text-slate-600">Ced. Prof.: 974987 / Ced. Esp.: 3225937</div>
+                        <div className="mt-auto pt-4 border-t border-slate-200 text-center">
+                            <div className="text-[10px] font-bold uppercase mb-6 text-slate-400">Atentamente:</div>
+                            <div className="border-t border-black mx-auto pt-1 inline-block px-4">
+                                <div className="font-bold text-[11px] text-slate-800">DR. JOSE LUIS ARTEAGA DOMINGUEZ</div>
+                                <div className="text-[10px] text-slate-600">Ced. Prof.: 974987 / Ced. Esp.: 3225937</div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Images Loop (Up to 4) */}
-                    <div className="grid grid-cols-2 gap-2">
-                        {exam.image_paths && exam.image_paths.slice(0, 4).map((path, idx) => path && (
-                            <div key={idx} className="relative aspect-square border border-slate-200 overflow-hidden">
-                                <img
-                                    src={path.startsWith('http') ? path : `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${path}`}
-                                    className="w-full h-full object-cover"
-                                    alt="Colpo"
-                                />
-                                <div className="absolute bottom-0 left-0 bg-black/50 text-white text-[10px] w-full px-1 uppercase tracking-tighter">
-                                    {idx === 0 ? 'VISTA NORMAL' :
-                                        idx === 1 ? 'VISTA ACIDO ACETICO' :
-                                            idx === 2 ? 'VISTA LUGOL' : 'OTRA VISTA'}
+                    {/* Right Side: 4 Images Grid */}
+                    <div className="w-1/2">
+                        <div className="grid grid-cols-2 gap-2">
+                            {exam.image_paths && exam.image_paths.slice(0, 4).map((path, idx) => path && (
+                                <div key={idx} className="relative aspect-square border border-slate-300 overflow-hidden bg-slate-50">
+                                    <img
+                                        src={path.startsWith('http') ? path : `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}${path}`}
+                                        className="w-full h-full object-cover"
+                                        alt="Colpo"
+                                    />
+                                    <div className="absolute bottom-0 left-0 bg-black/60 text-white text-[10px] w-full px-1 py-1 uppercase tracking-tighter text-center">
+                                        {idx === 0 ? 'VISTA NORMAL' :
+                                            idx === 1 ? 'VISTA ACIDO ACETICO' :
+                                                idx === 2 ? 'VISTA LUGOL' : 'OTRA VISTA'}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 </div>
 

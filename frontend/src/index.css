@@ -10,8 +10,8 @@
 
 @media print {
   @page {
-    margin: 0;
-    size: auto;
+    margin: 10mm;
+    size: A4;
   }
 
   body {
