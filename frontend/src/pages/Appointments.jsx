@@ -24,7 +24,10 @@ export default function Appointments() {
     const fetchAppointments = async () => {
         try {
             const response = await axios.get(`${API_BASE_URL}/appointments/`);
-            setAppointments(response.data);
+            // Only show future appointments (from now onwards)
+            const now = new Date();
+            const futureOnly = response.data.filter(appt => new Date(appt.date_time) > now);
+            setAppointments(futureOnly);
         } catch (err) {
             console.error('Error fetching appointments:', err);
         }

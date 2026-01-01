@@ -14,21 +14,58 @@ export default function Home() {
     useEffect(() => {
         const timer = setInterval(() => setCurrentTime(new Date()), 1000);
         fetchAppointments();
+        fetchWeather();
         return () => clearInterval(timer);
     }, []);
+
+    const fetchWeather = async () => {
+        try {
+            // Coordenadas de Celaya, Gto: 20.5223, -100.8123
+            const response = await axios.get('https://api.open-meteo.com/v1/forecast?latitude=20.5223&longitude=-100.8123&current_weather=true');
+            const data = response.data.current_weather;
+
+            // Mapear códigos de clima a condiciones en español
+            const weatherCodes = {
+                0: 'Despejado',
+                1: 'Principalmente Despejado',
+                2: 'Parcialmente Nublado',
+                3: 'Nublado',
+                45: 'Niebla', 48: 'Niebla',
+                51: 'Llovizna Ligera', 53: 'Llovizna Moderada', 55: 'Llovizna Intensa',
+                61: 'Lluvia Ligera', 63: 'Lluvia Moderada', 65: 'Lluvia Intensa',
+                71: 'Nieve Ligera', 73: 'Nieve Moderada', 75: 'Nieve Intensa',
+                80: 'Chubascos Ligeros', 81: 'Chubascos Moderados', 82: 'Chubascos Violentos',
+                95: 'Tormenta Eléctrica',
+            };
+
+            setWeather({
+                temp: Math.round(data.temperature),
+                condition: weatherCodes[data.weathercode] || 'Variado',
+                city: 'Celaya, Gto',
+                code: data.weathercode
+            });
+        } catch (err) {
+            console.error('Error fetching weather:', err);
+        }
+    };
 
     const fetchAppointments = async () => {
         try {
             const response = await axios.get(`${API_BASE_URL}/appointments/`);
             const now = new Date();
             const todayStr = now.toLocaleDateString('en-CA');
+            const endOfDay = new Date(now);
+            endOfDay.setHours(23, 59, 59, 999);
 
-            const today = response.data.filter(appt =>
-                new Date(appt.date_time).toLocaleDateString('en-CA') === todayStr
-            );
+            // Current day, but only from NOW onwards
+            const today = response.data.filter(appt => {
+                const apptDate = new Date(appt.date_time);
+                return apptDate.toLocaleDateString('en-CA') === todayStr && apptDate > now;
+            });
 
+            // From tomorrow onwards
             const upcoming = response.data.filter(appt =>
-                new Date(appt.date_time) > new Date(now.setHours(23, 59, 59, 999))
+                new Date(appt.date_time) > endOfDay
             );
 
             setTodayAppointments(today);
@@ -118,7 +155,14 @@ export default function Home() {
                 {/* Weather Widget */}
                 <div className="bg-white p-8 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col items-center justify-center text-center group hover:scale-105 transition-transform duration-300">
                     <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6">
-                        <CloudSun size={32} />
+                        {(() => {
+                            const code = weather.code;
+                            if (code === 0) return <Sun size={32} />;
+                            if (code >= 1 && code <= 2) return <CloudSun size={32} />;
+                            if (code === 3 || code === 45 || code === 48) return <Cloud size={32} />;
+                            if (code >= 51 && code <= 99) return <CloudRain size={32} />;
+                            return <CloudSun size={32} />;
+                        })()}
                     </div>
                     <div className="flex items-baseline gap-1">
                         <span className="text-5xl font-black text-slate-800 tracking-tighter">{weather.temp}</span>
