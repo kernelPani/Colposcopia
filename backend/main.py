@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import models
 from database import engine
-from routers import patients, exams, upload
+from routers import patients, exams, upload, appointments
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -19,6 +19,7 @@ app.add_middleware(
 app.include_router(patients.router)
 app.include_router(exams.router)
 app.include_router(upload.router)
+app.include_router(appointments.router)
 
 from fastapi.staticfiles import StaticFiles
 import os

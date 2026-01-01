@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Optional, Any
-from datetime import date
+from datetime import date, datetime
 
 # Exam Schemas
 class ColposcopyExamBase(BaseModel):
@@ -63,6 +63,25 @@ class ColposcopyExam(ColposcopyExamBase):
 
 # Extended exam schema with Patient details (for single exam view)
 class ColposcopyExamWithPatient(ColposcopyExam):
+    patient: Optional[Patient] = None
+
+# Appointment Schemas
+class AppointmentBase(BaseModel):
+    date_time: datetime
+    reason: Optional[str] = None
+    status: Optional[str] = "Pendiente"
+
+class AppointmentCreate(AppointmentBase):
+    patient_id: int
+
+class Appointment(AppointmentBase):
+    id: int
+    patient_id: int
+
+    class Config:
+        orm_mode = True
+
+class AppointmentWithPatient(Appointment):
     patient: Optional[Patient] = None
 
 # Update forward refs

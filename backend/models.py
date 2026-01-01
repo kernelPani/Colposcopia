@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, Text, JSON, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, Text, JSON, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -16,6 +16,7 @@ class Patient(Base):
     additional_data = Column(Text, nullable=True)
 
     exams = relationship("ColposcopyExam", back_populates="patient")
+    appointments = relationship("Appointment", back_populates="patient")
 
 class ColposcopyExam(Base):
     __tablename__ = "colposcopy_exams"
@@ -57,3 +58,14 @@ class ColposcopyExam(Base):
     image_paths = Column(JSON, nullable=True)
 
     patient = relationship("Patient", back_populates="exams")
+
+class Appointment(Base):
+    __tablename__ = "appointments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    patient_id = Column(Integer, ForeignKey("patients.id"))
+    date_time = Column(DateTime)
+    reason = Column(String(255), nullable=True)
+    status = Column(String(50), default="Pendiente")
+
+    patient = relationship("Patient", back_populates="appointments")

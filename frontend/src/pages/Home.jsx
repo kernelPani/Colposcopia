@@ -1,14 +1,42 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, Calendar as CalendarIcon, Cloud, CloudSun, CloudRain, Sun, Thermometer } from 'lucide-react';
+import axios from 'axios';
+import { Clock, Calendar as CalendarIcon, Cloud, CloudSun, CloudRain, Sun, Thermometer, User, Bell } from 'lucide-react';
+
+const API_BASE_URL = 'http://localhost:8000';
 
 export default function Home() {
     const [currentTime, setCurrentTime] = useState(new Date());
     const [weather, setWeather] = useState({ temp: 24, condition: 'Soleado', city: 'Celaya, Gto' });
+    const [todayAppointments, setTodayAppointments] = useState([]);
+    const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+    const [viewMode, setViewMode] = useState('today'); // 'today' or 'upcoming'
 
     useEffect(() => {
         const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+        fetchAppointments();
         return () => clearInterval(timer);
     }, []);
+
+    const fetchAppointments = async () => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/appointments/`);
+            const now = new Date();
+            const todayStr = now.toLocaleDateString('en-CA');
+
+            const today = response.data.filter(appt =>
+                new Date(appt.date_time).toLocaleDateString('en-CA') === todayStr
+            );
+
+            const upcoming = response.data.filter(appt =>
+                new Date(appt.date_time) > new Date(now.setHours(23, 59, 59, 999))
+            );
+
+            setTodayAppointments(today);
+            setUpcomingAppointments(upcoming);
+        } catch (err) {
+            console.error('Error fetching appointments:', err);
+        }
+    };
 
     // Helper for formatting time
     const formatTime = (date) => {
@@ -103,24 +131,109 @@ export default function Home() {
                 </div>
             </div>
 
-            {/* Welcome Banner */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-indigo-900 to-indigo-800 p-12 rounded-[2.5rem] text-white shadow-2xl shadow-indigo-900/20">
-                <div className="relative z-10 max-w-2xl">
-                    <h2 className="text-4xl font-black mb-4 leading-tight">
-                        Sistema Médico de Colposcopía Especializada
-                    </h2>
-                    <p className="text-indigo-100 text-lg opacity-90 leading-relaxed">
-                        Bienvenido de nuevo, Dr. Arteaga. Todas sus herramientas de diagnóstico están listas para su próxima consulta.
-                    </p>
-                    <div className="mt-8 flex gap-4">
-                        <div className="flex items-center gap-2 bg-indigo-700/50 px-4 py-2 rounded-full border border-indigo-500/30 text-sm font-medium">
-                            <Thermometer size={16} /> Hospital San José de Celaya
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Agenda de Hoy Section */}
+                <div className="bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden flex flex-col">
+                    <div className="p-8 border-b border-slate-50 space-y-4 bg-slate-50/30">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-indigo-100">
+                                    <Bell size={20} />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-slate-800">Citas</h3>
+                                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-0.5">Control de Agenda</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">En Vivo</span>
+                            </div>
+                        </div>
+
+                        {/* Filter Tabs */}
+                        <div className="flex p-1.5 bg-slate-100/80 rounded-2xl w-fit">
+                            <button
+                                onClick={() => setViewMode('today')}
+                                className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${viewMode === 'today' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                            >
+                                Hoy ({todayAppointments.length})
+                            </button>
+                            <button
+                                onClick={() => setViewMode('upcoming')}
+                                className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${viewMode === 'upcoming' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                            >
+                                Próximas ({upcomingAppointments.length})
+                            </button>
                         </div>
                     </div>
+
+                    <div className="flex-1 p-6 space-y-4 max-h-[400px] overflow-auto">
+                        {(viewMode === 'today' ? todayAppointments : upcomingAppointments).length === 0 ? (
+                            <div className="h-full flex flex-col items-center justify-center opacity-40 py-12">
+                                <CalendarIcon size={48} className="mb-4 text-slate-300" />
+                                <p className="font-bold text-slate-400">No hay citas {viewMode === 'today' ? 'para hoy' : 'programadas'}</p>
+                            </div>
+                        ) : (
+                            (viewMode === 'today' ? todayAppointments : upcomingAppointments).map((appt) => (
+                                <div key={appt.id} className="p-5 rounded-3xl bg-slate-50 border border-transparent hover:border-indigo-100 hover:bg-white hover:shadow-xl hover:shadow-slate-100 transition-all group">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-16 h-12 bg-white rounded-2xl flex flex-col items-center justify-center shadow-sm font-black text-indigo-600 border border-slate-100 group-hover:bg-indigo-600 group-hover:text-white group-hover:border-indigo-600 transition-all">
+                                                {viewMode === 'today' ? (
+                                                    <span>{new Date(appt.date_time).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', hour12: false })}</span>
+                                                ) : (
+                                                    <div className="flex flex-col items-center">
+                                                        <span className="text-[9px] uppercase leading-none mb-1">{new Date(appt.date_time).toLocaleDateString('es-MX', { month: 'short' })}</span>
+                                                        <span className="text-base leading-none">{new Date(appt.date_time).getDate()}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-slate-800 text-lg leading-tight">{appt.patient?.name}</p>
+                                                <div className="flex items-center gap-2 mt-1">
+                                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                                                        <Clock size={10} /> {new Date(appt.date_time).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                                                    </p>
+                                                    <span className="text-slate-300">•</span>
+                                                    <p className="text-[10px] text-indigo-400 font-bold uppercase tracking-wider">
+                                                        {appt.reason || 'Consulta General'}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="p-3 bg-white rounded-2xl border border-slate-100 shadow-sm opacity-0 group-hover:opacity-100 transition-all">
+                                            <div className="w-2 h-2 bg-indigo-400 rounded-full"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
                 </div>
-                {/* Abstract Circles for decoration */}
-                <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-white opacity-5 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 right-0 mr-10 mb-10 w-40 h-40 bg-indigo-400 opacity-10 rounded-full blur-2xl"></div>
+
+                {/* Welcome Banner (Smaller Version) */}
+                <div className="relative overflow-hidden bg-gradient-to-br from-indigo-900 to-indigo-800 p-10 rounded-[2.5rem] text-white shadow-2xl shadow-indigo-900/20 flex flex-col justify-center">
+                    <div className="relative z-10">
+                        <h2 className="text-3xl font-black mb-4 leading-tight">
+                            Colposcopía Especializada
+                        </h2>
+                        <p className="text-indigo-100 text-base opacity-90 leading-relaxed mb-8">
+                            Bienvenido de nuevo, Dr. Arteaga. Todas sus herramientas de diagnóstico están listas.
+                        </p>
+                        <div className="flex flex-wrap gap-3">
+                            <div className="flex items-center gap-2 bg-indigo-700/50 px-4 py-2 rounded-full border border-indigo-500/30 text-xs font-medium">
+                                <Thermometer size={14} /> Hospital San José de Celaya
+                            </div>
+                            <div className="flex items-center gap-2 bg-indigo-700/50 px-4 py-2 rounded-full border border-indigo-500/30 text-xs font-medium">
+                                <CalendarIcon size={14} /> {formatDate(currentTime)}
+                            </div>
+                        </div>
+                    </div>
+                    {/* Abstract Circles for decoration */}
+                    <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl"></div>
+                    <div className="absolute bottom-0 right-0 mr-8 mb-8 w-32 h-32 bg-indigo-400 opacity-10 rounded-full blur-2xl"></div>
+                </div>
             </div>
         </div>
     );

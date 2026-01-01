@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, Outlet } from 'react-router-dom';
-import { Home, Users, FileText, Settings } from 'lucide-react';
+import { Home, Users, FileText, Settings, Calendar } from 'lucide-react';
 
 export default function Layout() {
     return (
@@ -40,6 +40,10 @@ export default function Layout() {
                     <Link to="/patients" className="flex items-center space-x-3 px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl transition-all duration-300">
                         <Users size={20} />
                         <span className="font-semibold text-sm">Pacientes</span>
+                    </Link>
+                    <Link to="/appointments" className="flex items-center space-x-3 px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl transition-all duration-300">
+                        <Calendar size={20} />
+                        <span className="font-semibold text-sm">Citas</span>
                     </Link>
                     <div className="pt-6 pb-2 px-4">
                         <span className="text-[10px] uppercase text-slate-500 font-black tracking-[0.15em]">Reportes</span>

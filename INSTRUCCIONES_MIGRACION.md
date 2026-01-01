@@ -1,0 +1,43 @@
+# Guía de Migración del Proyecto
+
+Para mover este sistema a otra computadora y que siga funcionando correctamente, sigue estos pasos:
+
+## 1. Requisitos en la Nueva PC
+Asegúrate de tener instalado lo siguiente:
+- **Docker Desktop**: [Descargar aquí](https://www.docker.com/products/docker-desktop/)
+- **Git** (Opcional, si usas Git para mover el código).
+
+## 2. Copia de Archivos
+Debes copiar TODA la carpeta del proyecto (`Colposcopia`) a la nueva computadora. Asegúrate de incluir los archivos ocultos:
+- Carpeta `backend/`
+- Carpeta `frontend/`
+- Archivo `docker-compose.yml`
+- Archivo `.env` (¡Muy importante! Contiene las contraseñas de la base de datos).
+
+## 3. Respaldo de Datos (Pacientes, Estudios, Citas)
+Como la base de datos vive dentro de un "Volumen" de Docker, copiar la carpeta del código **no** copia los pacientes registrados automáticamente. Tienes dos opciones:
+
+### Opción A: Base de Datos Nueva (Vacía)
+Si solo quieres el sistema listo para usar pero sin los pacientes actuales:
+1. Simplemente ejecuta `docker-compose up --build` en la nueva PC. El sistema creará las tablas vacías automáticamente.
+
+### Opción B: Mantener tus Datos Actuales
+Si quieres llevarte tus pacientes y citas:
+1. En la PC **actual**, con el sistema corriendo, abre una terminal y ejecuta:
+   `docker exec colpo_db /usr/bin/mysqldump -u user -puserpassword colposcopia_db > respaldo.sql`
+2. Copia el archivo `respaldo.sql` a la nueva PC.
+3. En la **nueva PC**, después de iniciar el sistema con `docker-compose up`, ejecuta:
+   `cat respaldo.sql | docker exec -i colpo_db /usr/bin/mysql -u user -puserpassword colposcopia_db`
+
+## 4. Iniciar el Sistema
+Una vez que los archivos estén en la nueva PC, abre una terminal en la carpeta principal y ejecuta:
+```bash
+docker-compose up --build
+```
+Esto descargará las imágenes necesarias, compilará el frontend y el backend, y dejará el sistema listo en:
+- **Frontend**: `http://localhost:5173`
+- **Backend API**: `http://localhost:8000`
+
+## 5. Notas Importantes
+- **Imágenes**: Las imágenes de los estudios se guardan en `backend/uploads`. Al copiar toda la carpeta `backend`, las imágenes se irán contigo automáticamente.
+- **Red local**: Si quieres acceder desde otras PCs en la misma red, recuerda abrir el puerto 5173 en tu firewall.
