@@ -44,7 +44,7 @@ export default function ExamDetail() {
     const RowInfo = ({ label, value }) => (
         <div className="grid grid-cols-2 border-b border-slate-300 text-sm">
             <div className="font-bold bg-slate-50 px-2 py-1 text-slate-700 uppercase">{label}</div>
-            <div className="px-2 py-1 uppercase">{value || 'NORMAL'}</div>
+            <div className="px-2 py-1 uppercase">{value || 'EUTRÓFICO'}</div>
         </div>
     );
 
@@ -158,6 +158,55 @@ export default function ExamDetail() {
                             <div>{exam.last_pap_smear || '-'}</div>
                         </div>
                     </div>
+
+                    {/* Patient History (Antecedentes) - HIDDEN IN PRINT */}
+                    <div className="bg-slate-100 px-2 py-1 text-xs font-bold uppercase border-b border-slate-300 flex items-center gap-2 print:hidden">
+                        <span className="text-slate-500">📂</span> Antecedentes Clinicos:
+                    </div>
+                    <div className="grid grid-cols-2 text-xs border-b border-blue-800 print:hidden">
+                        <div className="border-r border-slate-300 divide-y divide-slate-100">
+                            <div className="p-1 px-2 flex justify-between">
+                                <span className="text-slate-500 font-bold text-[9px]">ENFERMEDADES:</span>
+                                <span className="uppercase">{exam.h_enfermedades || 'NINGUNA'}</span>
+                            </div>
+                            <div className="p-1 px-2 flex justify-between">
+                                <span className="text-slate-500 font-bold text-[9px]">MEDICAMENTOS:</span>
+                                <span className="uppercase">{exam.h_medicamentos || 'NINGUNO'}</span>
+                            </div>
+                            <div className="p-1 px-2 flex justify-between">
+                                <span className="text-slate-500 font-bold text-[9px]">ADICCIONES:</span>
+                                <span className="uppercase">{exam.h_adicciones || 'NINGUNA'}</span>
+                            </div>
+                            <div className="p-1 px-2 flex justify-between">
+                                <span className="text-slate-500 font-bold text-[9px]">ALÉRGICOS:</span>
+                                <span className="uppercase">{exam.h_alergicos || 'NINGUNO'}</span>
+                            </div>
+                        </div>
+                        <div className="divide-y divide-slate-100">
+                            <div className="p-1 px-2 flex justify-between">
+                                <span className="text-slate-500 font-bold text-[9px]">TRANSFUSIONALES:</span>
+                                <span className="uppercase">{exam.h_transfusionales || 'NINGUNO'}</span>
+                            </div>
+                            <div className="p-1 px-2 flex justify-between">
+                                <span className="text-slate-500 font-bold text-[9px]">QUIRÚRGICOS:</span>
+                                <span className="uppercase">{exam.h_quirurgicos || 'NINGUNO'}</span>
+                            </div>
+                            <div className="p-1 px-2 flex justify-between">
+                                <span className="text-slate-500 font-bold text-[9px]">GRUPO SANGUÍNEO:</span>
+                                <span className="uppercase">{exam.h_grupo_sanguineo || '-'}</span>
+                            </div>
+                            <div className="p-1 px-2 flex justify-between">
+                                <span className="text-slate-500 font-bold text-[9px]">FAM. ONCOLÓGICOS:</span>
+                                <span className="uppercase truncate max-w-[150px]">{exam.h_familiares_oncologicos || 'NINGUNO'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {exam.h_no_patologicos && (
+                        <div className="border-b border-blue-800 p-2 text-xs print:hidden">
+                            <span className="text-slate-500 font-bold text-[9px] uppercase block mb-1">Antecedentes No Patológicos:</span>
+                            <p className="uppercase">{exam.h_no_patologicos}</p>
+                        </div>
+                    )}
 
                     {/* Colposcopic Data */}
                     <div className="bg-slate-100 px-2 py-1 text-xs font-bold uppercase border-b border-slate-300 flex items-center gap-2">

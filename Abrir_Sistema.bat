@@ -1,0 +1,9 @@
+@echo off
+title Iniciando Sistema Medico...
+echo Verificando contenedores de Docker...
+cd /d "%~dp0"
+docker-compose up -d
+echo Esperando a que la base de datos este lista (esto puede tardar hasta 30 segundos)...
+timeout /t 30 /nobreak > nul
+start http://localhost:5173
+exit

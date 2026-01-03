@@ -30,6 +30,17 @@ class ColposcopyExamBase(BaseModel):
     last_pap_smear: Optional[str] = None
     image_paths: Optional[List[str]] = None
 
+    # Patient History (Historial Clínico)
+    h_enfermedades: Optional[str] = None
+    h_medicamentos: Optional[str] = None
+    h_adicciones: Optional[str] = None
+    h_alergicos: Optional[str] = None
+    h_transfusionales: Optional[str] = None
+    h_quirurgicos: Optional[str] = None
+    h_grupo_sanguineo: Optional[str] = None
+    h_no_patologicos: Optional[str] = None
+    h_familiares_oncologicos: Optional[str] = None
+
 class ColposcopyExamCreate(ColposcopyExamBase):
     patient_id: int
 

@@ -57,6 +57,17 @@ class ColposcopyExam(Base):
     # Images (Store paths as JSON list or specific columns)
     image_paths = Column(JSON, nullable=True)
 
+    # Patient History (Historial Clínico)
+    h_enfermedades = Column(Text, nullable=True)
+    h_medicamentos = Column(Text, nullable=True)
+    h_adicciones = Column(Text, nullable=True)
+    h_alergicos = Column(Text, nullable=True)
+    h_transfusionales = Column(Text, nullable=True)
+    h_quirurgicos = Column(Text, nullable=True)
+    h_grupo_sanguineo = Column(String(50), nullable=True)
+    h_no_patologicos = Column(Text, nullable=True)
+    h_familiares_oncologicos = Column(Text, nullable=True)
+
     patient = relationship("Patient", back_populates="exams")
 
 class Appointment(Base):

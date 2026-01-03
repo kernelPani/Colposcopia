@@ -53,6 +53,28 @@ def create_patient_exam(db: Session, exam: schemas.ColposcopyExamCreate):
 def get_patient_exam(db: Session, exam_id: int):
     return db.query(models.ColposcopyExam).options(joinedload(models.ColposcopyExam.patient)).filter(models.ColposcopyExam.id == exam_id).first()
 
+def update_colposcopy_exam(db: Session, exam_id: int, exam_update: schemas.ColposcopyExamBase):
+    db_exam = db.query(models.ColposcopyExam).filter(models.ColposcopyExam.id == exam_id).first()
+    if not db_exam:
+        return None
+    
+    update_data = exam_update.dict(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(db_exam, key, value)
+    
+    db.commit()
+    db.refresh(db_exam)
+    return db_exam
+
+def delete_colposcopy_exam(db: Session, exam_id: int):
+    db_exam = db.query(models.ColposcopyExam).filter(models.ColposcopyExam.id == exam_id).first()
+    if not db_exam:
+        return False
+    
+    db.delete(db_exam)
+    db.commit()
+    return True
+
 # Appointment CRUD
 def create_appointment(db: Session, appointment: schemas.AppointmentCreate):
     db_appointment = models.Appointment(**appointment.dict())
