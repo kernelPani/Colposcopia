@@ -41,6 +41,16 @@ class ColposcopyExamBase(BaseModel):
     h_no_patologicos: Optional[str] = None
     h_familiares_oncologicos: Optional[str] = None
 
+    # New fields
+    h_parejas: Optional[int] = None
+    h_fpp: Optional[date] = None
+    h_ectopicos: Optional[str] = None
+    h_tratamiento_hormonal: Optional[str] = None
+    h_ant_cancer_familiar: Optional[str] = None
+    h_dismenorrea: Optional[str] = None
+    h_dispareunia: Optional[str] = None
+    h_registro_embarazos: Optional[List[Any]] = None
+
 class ColposcopyExamCreate(ColposcopyExamBase):
     patient_id: int
 

@@ -44,7 +44,17 @@ export default function EditExam() {
         h_quirurgicos: 'NINGUNO',
         h_grupo_sanguineo: '',
         h_no_patologicos: '',
-        h_familiares_oncologicos: ''
+        h_familiares_oncologicos: '',
+
+        // New fields
+        h_parejas: '',
+        h_fpp: '',
+        h_ectopicos: 'NO',
+        h_tratamiento_hormonal: 'NO',
+        h_ant_cancer_familiar: 'NO',
+        h_dismenorrea: 'NO',
+        h_dispareunia: 'NO',
+        h_registro_embarazos: []
     });
 
     useEffect(() => {
@@ -55,12 +65,14 @@ export default function EditExam() {
 
                 // Ensure nulls are handled for the form
                 const mappedData = { ...data };
-                const numericFields = ['menarche_age', 'ivsa_age', 'gestas', 'partos', 'abortos', 'cesareas'];
+                const numericFields = ['menarche_age', 'ivsa_age', 'gestas', 'partos', 'abortos', 'cesareas', 'h_parejas'];
                 numericFields.forEach(field => {
                     if (mappedData[field] === null) mappedData[field] = '';
                 });
                 if (mappedData.fum === null) mappedData.fum = '';
+                if (mappedData.h_fpp === null) mappedData.h_fpp = '';
                 if (!mappedData.image_paths) mappedData.image_paths = ['', '', '', ''];
+                if (!mappedData.h_registro_embarazos) mappedData.h_registro_embarazos = [];
 
                 setFormData(mappedData);
             } catch (error) {
@@ -102,18 +114,44 @@ export default function EditExam() {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    const handleAddPregnancy = () => {
+        setFormData(prev => ({
+            ...prev,
+            h_registro_embarazos: [
+                ...prev.h_registro_embarazos,
+                { year: '', term: '', resolution: '', sex: '', weight: '', evolution: '', nutrition: '', comments: '' }
+            ]
+        }));
+    };
+
+    const handleRemovePregnancy = (index) => {
+        setFormData(prev => ({
+            ...prev,
+            h_registro_embarazos: prev.h_registro_embarazos.filter((_, i) => i !== index)
+        }));
+    };
+
+    const handlePregnancyChange = (index, field, value) => {
+        setFormData(prev => {
+            const newList = [...prev.h_registro_embarazos];
+            newList[index] = { ...newList[index], [field]: value };
+            return { ...prev, h_registro_embarazos: newList };
+        });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSaving(true);
 
         const cleanedData = { ...formData };
-        const numericFields = ['menarche_age', 'ivsa_age', 'gestas', 'partos', 'abortos', 'cesareas'];
+        const numericFields = ['menarche_age', 'ivsa_age', 'gestas', 'partos', 'abortos', 'cesareas', 'h_parejas'];
         numericFields.forEach(field => {
             if (cleanedData[field] === '') cleanedData[field] = null;
             else cleanedData[field] = parseInt(cleanedData[field]);
         });
 
         if (cleanedData.fum === '') cleanedData.fum = null;
+        if (cleanedData.h_fpp === '') cleanedData.h_fpp = null;
 
         try {
             await api.put(`/exams/${examId}`, cleanedData);
@@ -200,6 +238,59 @@ export default function EditExam() {
                                     <div>
                                         <label className="block text-xs font-medium text-slate-500">F.U.M.</label>
                                         <input type="date" name="fum" value={formData.fum} onChange={handleChange} className="w-full border rounded p-1.5 text-sm" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-slate-500">Parejas</label>
+                                        <input type="number" name="h_parejas" value={formData.h_parejas} onChange={handleChange} className="w-full border rounded p-1.5 text-sm" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-slate-500">F.P.P.</label>
+                                        <input type="date" name="h_fpp" value={formData.h_fpp} onChange={handleChange} className="w-full border rounded p-1.5 text-sm" />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3 mb-3">
+                                    <div>
+                                        <label className="block text-xs font-medium text-slate-500">Ectópicos</label>
+                                        <select name="h_ectopicos" value={formData.h_ectopicos || 'NO'} onChange={handleChange} className="w-full border rounded p-1.5 text-sm">
+                                            <option>NO</option>
+                                            <option>SI</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-slate-500">Trat. Hormonal</label>
+                                        <select name="h_tratamiento_hormonal" value={formData.h_tratamiento_hormonal || 'NO'} onChange={handleChange} className="w-full border rounded p-1.5 text-sm">
+                                            <option>NO</option>
+                                            <option>SI</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-slate-500">Ant. Cáncer Fam.</label>
+                                        <select name="h_ant_cancer_familiar" value={formData.h_ant_cancer_familiar || 'NO'} onChange={handleChange} className="w-full border rounded p-1.5 text-sm">
+                                            <option>NO</option>
+                                            <option>SI</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3 mb-3">
+                                    <div>
+                                        <label className="block text-xs font-medium text-slate-500">Dismenorrea</label>
+                                        <select name="h_dismenorrea" value={formData.h_dismenorrea || 'NO'} onChange={handleChange} className="w-full border rounded p-1.5 text-sm">
+                                            <option>NO</option>
+                                            <option>LEVE</option>
+                                            <option>MODERADA</option>
+                                            <option>SEVERA</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-slate-500">Dispareunia</label>
+                                        <select name="h_dispareunia" value={formData.h_dispareunia || 'NO'} onChange={handleChange} className="w-full border rounded p-1.5 text-sm">
+                                            <option>NO</option>
+                                            <option>LEVE</option>
+                                            <option>MODERADA</option>
+                                            <option>SEVERA</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div className="mb-3">
@@ -363,21 +454,52 @@ export default function EditExam() {
                                 <div className="space-y-3">
                                     <div>
                                         <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Enfermedades</label>
-                                        <select name="h_enfermedades" value={formData.h_enfermedades || 'NINGUNA'} onChange={handleChange} className="w-full border rounded p-1.5 text-sm">
+                                        <select name="h_enfermedades" value={formData.h_enfermedades || 'NINGUNA'} onChange={handleChange} className="w-full border rounded p-1.5 text-sm uppercase">
                                             <option>NINGUNA</option>
+                                            <option>ANEMIA</option>
+                                            <option>CARDIOPATIAS</option>
+                                            <option>ENF. HEPATICA O RENAL</option>
+                                            <option>DIABETES</option>
+                                            <option>ENFERMEDAD PULMUNAR</option>
+                                            <option>EMBOLIAS</option>
+                                            <option>ENDOCRINOPATIAS</option>
+                                            <option>EPILEPSIA</option>
+                                            <option>F. REUMATICA</option>
+                                            <option>HEMOGLOBINOPATIAS</option>
+                                            <option>HIPERTENSION</option>
+                                            <option>INFERTILIDAD</option>
+                                            <option>MALFORMACION CONGENITAS</option>
+                                            <option>NEPLASIA INTRAEPITELIAL CERVICAL</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Medicamentos</label>
-                                        <select name="h_medicamentos" value={formData.h_medicamentos || 'NINGUNO'} onChange={handleChange} className="w-full border rounded p-1.5 text-sm">
+                                        <select name="h_medicamentos" value={formData.h_medicamentos || 'NINGUNO'} onChange={handleChange} className="w-full border rounded p-1.5 text-sm uppercase">
                                             <option>NINGUNO</option>
+                                            <option>ANTIDEPRESIVOS</option>
+                                            <option>BARBITURICOS</option>
+                                            <option>SEDANTES</option>
+                                            <option>ANOREXIGENOS</option>
+                                            <option>ANTICONCEPTIVOS</option>
+                                            <option>ANTICOAGULANTES</option>
+                                            <option>CORTICOESTEROIDES</option>
+                                            <option>DIGITALICOS</option>
+                                            <option>ANTIHIPERTENSIVOS</option>
+                                            <option>DIURETICOS</option>
+                                            <option>ANTICONVULSIVANTES</option>
+                                            <option>HIPOGLUCEMIANTES</option>
+                                            <option>INSULINA</option>
+                                            <option>OTROS</option>
                                         </select>
                                     </div>
                                     <div className="grid grid-cols-2 gap-3">
                                         <div>
                                             <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Adicciones</label>
-                                            <select name="h_adicciones" value={formData.h_adicciones || 'NINGUNA'} onChange={handleChange} className="w-full border rounded p-1.5 text-sm">
+                                            <select name="h_adicciones" value={formData.h_adicciones || 'NINGUNA'} onChange={handleChange} className="w-full border rounded p-1.5 text-sm uppercase">
                                                 <option>NINGUNA</option>
+                                                <option>ALCOHOLISMO</option>
+                                                <option>TABAQUISMO</option>
+                                                <option>DROGADICCION</option>
                                             </select>
                                         </div>
                                         <div>

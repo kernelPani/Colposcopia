@@ -68,6 +68,18 @@ class ColposcopyExam(Base):
     h_no_patologicos = Column(Text, nullable=True)
     h_familiares_oncologicos = Column(Text, nullable=True)
 
+    # Missing Gyneco-Obstetric fields from UI
+    h_parejas = Column(Integer, nullable=True)
+    h_fpp = Column(Date, nullable=True)
+    h_ectopicos = Column(String(100), nullable=True)
+    h_tratamiento_hormonal = Column(String(100), nullable=True)
+    h_ant_cancer_familiar = Column(String(100), nullable=True)
+    h_dismenorrea = Column(String(50), nullable=True)
+    h_dispareunia = Column(String(50), nullable=True)
+    
+    # Detailed Pregnancy Registry (JSON list of objects)
+    h_registro_embarazos = Column(JSON, nullable=True)
+
     patient = relationship("Patient", back_populates="exams")
 
 class Appointment(Base):

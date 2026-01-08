@@ -114,6 +114,44 @@ export default function PatientDetail() {
                             </div>
                         </div>
 
+                        {/* Datos Gineco-Obstétricos Adicionales */}
+                        <div>
+                            <h4 className="text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 bg-indigo-600 rounded-full"></span>
+                                Datos Gineco-Obstétricos
+                            </h4>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-6">
+                                <div>
+                                    <label className="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Parejas</label>
+                                    <p className="text-sm text-slate-700 font-medium uppercase">{exam.h_parejas || '0'}</p>
+                                </div>
+                                <div>
+                                    <label className="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">F.P.P.</label>
+                                    <p className="text-sm text-slate-700 font-medium uppercase">{exam.h_fpp || '-'}</p>
+                                </div>
+                                <div>
+                                    <label className="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Ectópicos</label>
+                                    <p className="text-sm text-slate-700 font-medium uppercase">{exam.h_ectopicos || 'NO'}</p>
+                                </div>
+                                <div>
+                                    <label className="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Trat. Hormonal</label>
+                                    <p className="text-sm text-slate-700 font-medium uppercase">{exam.h_tratamiento_hormonal || 'NO'}</p>
+                                </div>
+                                <div>
+                                    <label className="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Ant. Cáncer Fam.</label>
+                                    <p className="text-sm text-slate-700 font-medium uppercase">{exam.h_ant_cancer_familiar || 'NO'}</p>
+                                </div>
+                                <div>
+                                    <label className="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Dismenorrea</label>
+                                    <p className="text-sm text-slate-700 font-medium uppercase">{exam.h_dismenorrea || 'NO'}</p>
+                                </div>
+                                <div>
+                                    <label className="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Dispareunia</label>
+                                    <p className="text-sm text-slate-700 font-medium uppercase">{exam.h_dispareunia || 'NO'}</p>
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Antecedentes No Patológicos */}
                         {exam.h_no_patologicos && (
                             <div>
@@ -137,6 +175,44 @@ export default function PatientDetail() {
                                 {exam.h_familiares_oncologicos || 'NINGUNO'}
                             </div>
                         </div>
+
+                        {/* Registro de Embarazos Anteriores */}
+                        {exam.h_registro_embarazos && exam.h_registro_embarazos.length > 0 && (
+                            <div>
+                                <h4 className="text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 bg-indigo-600 rounded-full"></span>
+                                    Registro de Embarazos Anteriores
+                                </h4>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-[10px] border-collapse min-w-[500px]">
+                                        <thead>
+                                            <tr className="bg-slate-50 text-slate-500 uppercase">
+                                                <th className="p-2 border text-left">Año</th>
+                                                <th className="p-2 border text-left">Término/Pre</th>
+                                                <th className="p-2 border text-left">Resolución</th>
+                                                <th className="p-2 border text-left">Sexo</th>
+                                                <th className="p-2 border text-left">Peso</th>
+                                                <th className="p-2 border text-left">Evolución</th>
+                                                <th className="p-2 border text-left">Alimentación</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {exam.h_registro_embarazos.map((reg, idx) => (
+                                                <tr key={idx} className="text-slate-700">
+                                                    <td className="p-2 border font-medium">{reg.year}</td>
+                                                    <td className="p-2 border uppercase">{reg.term}</td>
+                                                    <td className="p-2 border uppercase">{reg.resolution}</td>
+                                                    <td className="p-2 border uppercase">{reg.sex}</td>
+                                                    <td className="p-2 border">{reg.weight}</td>
+                                                    <td className="p-2 border uppercase">{reg.evolution}</td>
+                                                    <td className="p-2 border uppercase">{reg.nutrition}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-end rounded-b-2xl">

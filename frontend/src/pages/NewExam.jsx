@@ -48,7 +48,17 @@ export default function NewExam() {
         h_quirurgicos: 'NINGUNO',
         h_grupo_sanguineo: '',
         h_no_patologicos: '',
-        h_familiares_oncologicos: ''
+        h_familiares_oncologicos: '',
+
+        // New fields
+        h_parejas: '',
+        h_fpp: '',
+        h_ectopicos: 'NO',
+        h_tratamiento_hormonal: 'NO',
+        h_ant_cancer_familiar: 'NO',
+        h_dismenorrea: 'NO',
+        h_dispareunia: 'NO',
+        h_registro_embarazos: []
     });
 
     React.useEffect(() => {
@@ -94,19 +104,45 @@ export default function NewExam() {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    const handleAddPregnancy = () => {
+        setFormData(prev => ({
+            ...prev,
+            h_registro_embarazos: [
+                ...prev.h_registro_embarazos,
+                { year: '', term: '', resolution: '', sex: '', weight: '', evolution: '', nutrition: '', comments: '' }
+            ]
+        }));
+    };
+
+    const handleRemovePregnancy = (index) => {
+        setFormData(prev => ({
+            ...prev,
+            h_registro_embarazos: prev.h_registro_embarazos.filter((_, i) => i !== index)
+        }));
+    };
+
+    const handlePregnancyChange = (index, field, value) => {
+        setFormData(prev => {
+            const newList = [...prev.h_registro_embarazos];
+            newList[index] = { ...newList[index], [field]: value };
+            return { ...prev, h_registro_embarazos: newList };
+        });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSaving(true);
 
         // Sanitize data: convert empty strings to null for numeric/date fields
         const cleanedData = { ...formData, patient_id: parseInt(id) };
-        const numericFields = ['menarche_age', 'ivsa_age', 'gestas', 'partos', 'abortos', 'cesareas'];
+        const numericFields = ['menarche_age', 'ivsa_age', 'gestas', 'partos', 'abortos', 'cesareas', 'h_parejas'];
         numericFields.forEach(field => {
             if (cleanedData[field] === '') cleanedData[field] = null;
             else cleanedData[field] = parseInt(cleanedData[field]);
         });
 
         if (cleanedData.fum === '') cleanedData.fum = null;
+        if (cleanedData.h_fpp === '') cleanedData.h_fpp = null;
 
         try {
             await api.post('/exams/', cleanedData);
@@ -196,6 +232,59 @@ export default function NewExam() {
                                     <div>
                                         <label className="block text-xs font-medium text-slate-500">F.U.M.</label>
                                         <input type="date" name="fum" value={formData.fum} onChange={handleChange} className="w-full border rounded p-1.5 text-sm" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-slate-500">Parejas</label>
+                                        <input type="number" name="h_parejas" value={formData.h_parejas} onChange={handleChange} className="w-full border rounded p-1.5 text-sm" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-slate-500">F.P.P.</label>
+                                        <input type="date" name="h_fpp" value={formData.h_fpp} onChange={handleChange} className="w-full border rounded p-1.5 text-sm" />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3 mb-3">
+                                    <div>
+                                        <label className="block text-xs font-medium text-slate-500">Ectópicos</label>
+                                        <select name="h_ectopicos" value={formData.h_ectopicos} onChange={handleChange} className="w-full border rounded p-1.5 text-sm">
+                                            <option>NO</option>
+                                            <option>SI</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-slate-500">Trat. Hormonal</label>
+                                        <select name="h_tratamiento_hormonal" value={formData.h_tratamiento_hormonal} onChange={handleChange} className="w-full border rounded p-1.5 text-sm">
+                                            <option>NO</option>
+                                            <option>SI</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-slate-500">Ant. Cáncer Fam.</label>
+                                        <select name="h_ant_cancer_familiar" value={formData.h_ant_cancer_familiar} onChange={handleChange} className="w-full border rounded p-1.5 text-sm">
+                                            <option>NO</option>
+                                            <option>SI</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3 mb-3">
+                                    <div>
+                                        <label className="block text-xs font-medium text-slate-500">Dismenorrea</label>
+                                        <select name="h_dismenorrea" value={formData.h_dismenorrea} onChange={handleChange} className="w-full border rounded p-1.5 text-sm">
+                                            <option>NO</option>
+                                            <option>LEVE</option>
+                                            <option>MODERADA</option>
+                                            <option>SEVERA</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-slate-500">Dispareunia</label>
+                                        <select name="h_dispareunia" value={formData.h_dispareunia} onChange={handleChange} className="w-full border rounded p-1.5 text-sm">
+                                            <option>NO</option>
+                                            <option>LEVE</option>
+                                            <option>MODERADA</option>
+                                            <option>SEVERA</option>
+                                        </select>
                                     </div>
                                 </div>
 
@@ -369,21 +458,52 @@ export default function NewExam() {
                                 <div className="space-y-3">
                                     <div>
                                         <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Enfermedades</label>
-                                        <select name="h_enfermedades" value={formData.h_enfermedades} onChange={handleChange} className="w-full border rounded p-1.5 text-sm">
+                                        <select name="h_enfermedades" value={formData.h_enfermedades} onChange={handleChange} className="w-full border rounded p-1.5 text-sm uppercase">
                                             <option>NINGUNA</option>
+                                            <option>ANEMIA</option>
+                                            <option>CARDIOPATIAS</option>
+                                            <option>ENF. HEPATICA O RENAL</option>
+                                            <option>DIABETES</option>
+                                            <option>ENFERMEDAD PULMUNAR</option>
+                                            <option>EMBOLIAS</option>
+                                            <option>ENDOCRINOPATIAS</option>
+                                            <option>EPILEPSIA</option>
+                                            <option>F. REUMATICA</option>
+                                            <option>HEMOGLOBINOPATIAS</option>
+                                            <option>HIPERTENSION</option>
+                                            <option>INFERTILIDAD</option>
+                                            <option>MALFORMACION CONGENITAS</option>
+                                            <option>NEPLASIA INTRAEPITELIAL CERVICAL</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Medicamentos</label>
-                                        <select name="h_medicamentos" value={formData.h_medicamentos} onChange={handleChange} className="w-full border rounded p-1.5 text-sm">
+                                        <select name="h_medicamentos" value={formData.h_medicamentos} onChange={handleChange} className="w-full border rounded p-1.5 text-sm uppercase">
                                             <option>NINGUNO</option>
+                                            <option>ANTIDEPRESIVOS</option>
+                                            <option>BARBITURICOS</option>
+                                            <option>SEDANTES</option>
+                                            <option>ANOREXIGENOS</option>
+                                            <option>ANTICONCEPTIVOS</option>
+                                            <option>ANTICOAGULANTES</option>
+                                            <option>CORTICOESTEROIDES</option>
+                                            <option>DIGITALICOS</option>
+                                            <option>ANTIHIPERTENSIVOS</option>
+                                            <option>DIURETICOS</option>
+                                            <option>ANTICONVULSIVANTES</option>
+                                            <option>HIPOGLUCEMIANTES</option>
+                                            <option>INSULINA</option>
+                                            <option>OTROS</option>
                                         </select>
                                     </div>
                                     <div className="grid grid-cols-2 gap-3">
                                         <div>
                                             <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Adicciones</label>
-                                            <select name="h_adicciones" value={formData.h_adicciones} onChange={handleChange} className="w-full border rounded p-1.5 text-sm">
+                                            <select name="h_adicciones" value={formData.h_adicciones} onChange={handleChange} className="w-full border rounded p-1.5 text-sm uppercase">
                                                 <option>NINGUNA</option>
+                                                <option>ALCOHOLISMO</option>
+                                                <option>TABAQUISMO</option>
+                                                <option>DROGADICCION</option>
                                             </select>
                                         </div>
                                         <div>
@@ -434,6 +554,52 @@ export default function NewExam() {
                                     className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 min-h-[80px]"
                                     placeholder="Detallar antecedentes de cáncer en la familia..."
                                 />
+                            </div>
+
+                            {/* Detailed Pregnancy Registry */}
+                            <div className="bg-white p-4 rounded-xl shadow-sm overflow-x-auto">
+                                <div className="flex justify-between items-center mb-3">
+                                    <label className="block text-xs font-bold text-indigo-600 uppercase px-2 border-l-4 border-indigo-600">Registro de Embarazos Anteriores</label>
+                                    <button
+                                        type="button"
+                                        onClick={handleAddPregnancy}
+                                        className="bg-indigo-100 text-indigo-600 p-1 rounded-md hover:bg-indigo-200"
+                                    >
+                                        <Plus size={16} />
+                                    </button>
+                                </div>
+                                <table className="w-full text-[10px] border-collapse min-w-[800px]">
+                                    <thead>
+                                        <tr className="bg-slate-50 text-slate-500 uppercase">
+                                            <th className="p-1 border text-left">Año</th>
+                                            <th className="p-1 border text-left">Término/Pre</th>
+                                            <th className="p-1 border text-left">Resolución</th>
+                                            <th className="p-1 border text-left">Sexo</th>
+                                            <th className="p-1 border text-left">Peso</th>
+                                            <th className="p-1 border text-left">Evolución</th>
+                                            <th className="p-1 border text-left">Alimentación</th>
+                                            <th className="p-1 border text-left">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {formData.h_registro_embarazos.map((reg, idx) => (
+                                            <tr key={idx}>
+                                                <td className="p-0.5 border"><input className="w-full p-1" value={reg.year} onChange={(e) => handlePregnancyChange(idx, 'year', e.target.value)} /></td>
+                                                <td className="p-0.5 border"><input className="w-full p-1" value={reg.term} onChange={(e) => handlePregnancyChange(idx, 'term', e.target.value)} /></td>
+                                                <td className="p-0.5 border"><input className="w-full p-1" value={reg.resolution} onChange={(e) => handlePregnancyChange(idx, 'resolution', e.target.value)} /></td>
+                                                <td className="p-0.5 border"><input className="w-full p-1" value={reg.sex} onChange={(e) => handlePregnancyChange(idx, 'sex', e.target.value)} /></td>
+                                                <td className="p-0.5 border"><input className="w-full p-1" value={reg.weight} onChange={(e) => handlePregnancyChange(idx, 'weight', e.target.value)} /></td>
+                                                <td className="p-0.5 border"><input className="w-full p-1" value={reg.evolution} onChange={(e) => handlePregnancyChange(idx, 'evolution', e.target.value)} /></td>
+                                                <td className="p-0.5 border"><input className="w-full p-1" value={reg.nutrition} onChange={(e) => handlePregnancyChange(idx, 'nutrition', e.target.value)} /></td>
+                                                <td className="p-0.5 border text-center">
+                                                    <button type="button" onClick={() => handleRemovePregnancy(idx)} className="text-red-400 hover:text-red-600">
+                                                        <Plus className="rotate-45" size={14} />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     )}
